@@ -1,7 +1,7 @@
 // UI-thread handle on the tofu worker. A process can't be interrupted from
 // outside the Go runtime, so Ctrl-C on a busy process replaces the worker.
 import type { Entry } from "./vfs/snapshot";
-import type { FromWorker, ToWorker } from "./protocol";
+import type { Edit, FromWorker, ToWorker } from "./protocol";
 
 export interface HostEvents {
   output(data: Uint8Array): void;
@@ -13,6 +13,8 @@ export interface HostEvents {
 export class TofuHost {
   private worker!: Worker;
   private exitWaiter?: (code: number) => void;
+  /** Edits since the last command exit; replayed if the worker is replaced before persisting. */
+  private unsaved = new Map<string, Uint8Array | null>();
   running = false;
 
   constructor(
@@ -28,7 +30,8 @@ export class TofuHost {
   private spawn() {
     this.worker = this.makeWorker();
     this.worker.onmessage = (e: MessageEvent<FromWorker>) => this.handle(e.data);
-    this.send({ t: "init", module: this.module, seed: this.seed(), persist: this.persist });
+    const edits: Edit[] = [...this.unsaved].map(([path, data]) => ({ path, data: data && data.slice() }));
+    this.send({ t: "init", module: this.module, seed: this.seed(), persist: this.persist, edits });
   }
 
   private send(m: ToWorker, transfer: Transferable[] = []) {
@@ -45,6 +48,7 @@ export class TofuHost {
       case "files":
         return this.events.files(m.files);
       case "exit":
+        this.unsaved.clear();
         this.events.files(m.files);
         return this.finish(m.code);
       case "interrupt":
@@ -80,14 +84,17 @@ export class TofuHost {
 
   writeFile(path: string, text: string) {
     const data = new TextEncoder().encode(text);
-    this.send({ t: "write", path, data }, [data.buffer]);
+    this.unsaved.set(path, data);
+    this.send({ t: "write", path, data: data.slice() });
   }
 
   removeFile(path: string) {
+    this.unsaved.set(path, null);
     this.send({ t: "remove", path });
   }
 
   reset(seed: Entry[]) {
+    this.unsaved.clear();
     this.send({ t: "reset", seed });
   }
 

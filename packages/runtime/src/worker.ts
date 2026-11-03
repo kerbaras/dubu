@@ -3,7 +3,7 @@ import { createMachine, tofuEnv } from "./machine";
 import { runProcess } from "./process";
 import { snapshot, restore, clear, type Entry } from "./vfs/snapshot";
 import { idbGet, idbSet } from "./idb";
-import { WORKSPACE, type FromWorker, type ToWorker } from "./protocol";
+import { WORKSPACE, type Edit, type FromWorker, type ToWorker } from "./protocol";
 
 const KEY = "workspace:v1";
 const post = (m: FromWorker, transfer: Transferable[] = []) => postMessage(m, { transfer });
@@ -28,11 +28,12 @@ function schedulePersist() {
   persistTimer = setTimeout(() => void idbSet(KEY, workspace()).catch(() => {}), 250);
 }
 
-async function init(mod: WebAssembly.Module, seed: Entry[], keep: boolean) {
+async function init(mod: WebAssembly.Module, seed: Entry[], keep: boolean, edits: Edit[]) {
   module = mod;
   persist = keep;
   const saved = keep ? await idbGet<Entry[]>(KEY).catch(() => undefined) : undefined;
   restore(machine.tree, saved?.length ? saved : seed);
+  for (const { path, data } of edits) data ? write(path, data) : remove(path);
   post({ t: "ready", files: workspace(), restored: !!saved?.length });
 }
 
@@ -70,16 +71,25 @@ function write(path: string, data: Uint8Array) {
 
 function remove(path: string) {
   const { dir, name } = machine.tree.parent(path);
-  dir.children.delete(name);
+  if (!dir.children.delete(name)) return;
   schedulePersist();
 }
 
+// Every message waits for init, so nothing races the IndexedDB restore.
+let booted = Promise.resolve();
+
 onmessage = (e: MessageEvent<ToWorker>) => {
   const m = e.data;
+  if (m.t === "init") {
+    booted = init(m.module, m.seed, m.persist, m.edits).catch((err) => post({ t: "error", message: String(err) }));
+    return;
+  }
+  void booted.then(() => handle(m));
+};
+
+function handle(m: Exclude<ToWorker, { t: "init" }>) {
   try {
     switch (m.t) {
-      case "init":
-        return void init(m.module, m.seed, m.persist).catch((err) => post({ t: "error", message: String(err) }));
       case "run":
         return void run(m.argv, m.cols, m.rows, m.stdin);
       case "stdin":
