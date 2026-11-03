@@ -2,7 +2,7 @@
 import type { Entry } from "./vfs/snapshot";
 
 export type ToWorker =
-  | { t: "init"; wasmUrl: string; seed: Entry[] }
+  | { t: "init"; module: WebAssembly.Module; seed: Entry[] }
   | { t: "run"; argv: string[]; cols: number; rows: number }
   | { t: "stdin"; data: string }
   | { t: "resize"; cols: number; rows: number }
@@ -11,7 +11,6 @@ export type ToWorker =
   | { t: "reset"; seed: Entry[] };
 
 export type FromWorker =
-  | { t: "progress"; loaded: number; total: number }
   | { t: "ready"; files: Entry[]; restored: boolean }
   | { t: "out"; data: Uint8Array }
   | { t: "interrupt" }

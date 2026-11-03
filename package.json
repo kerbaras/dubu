@@ -1,0 +1,14 @@
+{
+  "name": "tofu-playground",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.4.2",
+  "scripts": {
+    "build:wasm": "packages/tofu-wasm/build.sh",
+    "dev": "pnpm --filter @tofu-playground/web dev",
+    "build": "pnpm --filter @tofu-playground/web build",
+    "test": "pnpm -r test",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "pnpm -r lint"
+  }
+}

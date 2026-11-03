@@ -47,7 +47,7 @@ export const newDir = (perm = 0o755): DirNode => ({
   children: new Map(),
   ...stamp(S_IFDIR | perm),
 });
-export const newFile = (data = new Uint8Array(0), perm = 0o644): FileNode => ({
+export const newFile = (data: Uint8Array = new Uint8Array(0), perm = 0o644): FileNode => ({
   kind: "file",
   data,
   size: data.length,

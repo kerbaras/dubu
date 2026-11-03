@@ -22,8 +22,6 @@ export interface ProcessSpec {
 const g = globalThis as Record<string, unknown>;
 
 export async function runProcess(module: WebAssembly.Module, spec: ProcessSpec): Promise<number> {
-  g.fs = spec.fs;
-  g.process = spec.process;
   g.__tofuTTY = spec.tty;
   const go = new (g.Go as typeof Go)();
   go.argv = spec.argv;
@@ -31,6 +29,20 @@ export async function runProcess(module: WebAssembly.Module, spec: ProcessSpec):
   let code = 0;
   go.exit = (c) => (code = c);
   const instance = await WebAssembly.instantiate(module, go.importObject);
-  await go.run(instance);
+  // Go caches globalThis.fs and globalThis.process during its synchronous
+  // startup, so they only need to be swapped in for that moment.
+  const saved = { fs: g.fs, process: g.process };
+  Object.assign(g, { fs: spec.fs, process: spec.process });
+  let done: Promise<void>;
+  try {
+    done = go.run(instance);
+  } finally {
+    Object.assign(g, saved);
+  }
+  await done;
+  // Go leaves timers behind on exit; cancel them before they resume a dead program.
+  const timers = (go as unknown as { _scheduledTimeouts: Map<number, ReturnType<typeof setTimeout>> })._scheduledTimeouts;
+  for (const t of timers.values()) clearTimeout(t);
+  timers.clear();
   return code;
 }

@@ -1,7 +1,6 @@
 // Web Worker hosting the tofu wasm binary and its sandbox filesystem.
 import { createMachine, tofuEnv } from "./machine";
 import { runProcess } from "./process";
-import { loadModule } from "./loader";
 import { snapshot, restore, clear, type Entry } from "./vfs/snapshot";
 import { idbGet, idbSet } from "./idb";
 import { WORKSPACE, type FromWorker, type ToWorker } from "./protocol";
@@ -16,7 +15,7 @@ const machine = createMachine(
   },
   () => schedulePersist(),
 );
-let module: Promise<WebAssembly.Module> | undefined;
+let module: WebAssembly.Module | undefined;
 let running = false;
 let persistTimer: ReturnType<typeof setTimeout> | undefined;
 
@@ -27,11 +26,10 @@ function schedulePersist() {
   persistTimer = setTimeout(() => void idbSet(KEY, workspace()).catch(() => {}), 250);
 }
 
-async function init(wasmUrl: string, seed: Entry[]) {
-  module = loadModule(wasmUrl, (loaded, total) => post({ t: "progress", loaded, total }));
+async function init(mod: WebAssembly.Module, seed: Entry[]) {
+  module = mod;
   const saved = await idbGet<Entry[]>(KEY).catch(() => undefined);
   restore(machine.tree, saved?.length ? saved : seed);
-  await module;
   post({ t: "ready", files: workspace(), restored: !!saved?.length });
 }
 
@@ -43,7 +41,7 @@ async function run(argv: string[], cols: number, rows: number) {
   machine.tree.cwd = WORKSPACE;
   let code = 1;
   try {
-    code = await runProcess(await module, {
+    code = await runProcess(module, {
       argv,
       env: tofuEnv(cols, rows),
       fs: machine.fs,
@@ -77,7 +75,7 @@ onmessage = (e: MessageEvent<ToWorker>) => {
   try {
     switch (m.t) {
       case "init":
-        return void init(m.wasmUrl, m.seed).catch((err) => post({ t: "error", message: String(err) }));
+        return void init(m.module, m.seed).catch((err) => post({ t: "error", message: String(err) }));
       case "run":
         return void run(m.argv, m.cols, m.rows);
       case "stdin":
