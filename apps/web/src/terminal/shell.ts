@@ -20,6 +20,7 @@ export interface ShellDeps {
 export class Shell {
   private editor: LineEditor;
   private busy = false;
+  private pasted: string[] = [];
 
   constructor(
     private term: Terminal,
@@ -38,8 +39,23 @@ export class Shell {
   }
 
   input(data: string) {
-    if (this.busy) this.deps.host().stdin(data);
-    else this.editor.input(data);
+    if (this.busy) return this.deps.host().stdin(data);
+    if (data.length < 2 || !/[\r\n]/.test(data)) return this.editor.input(data);
+    const lines = data.split(/\r\n|\r|\n/);
+    const tail = lines.pop() ?? "";
+    this.pasted.push(...lines.map((l) => `${l}\r`), tail);
+    this.drain();
+  }
+
+  /** Feeds pasted lines one at a time; once a command runs, the rest is its stdin. */
+  private drain() {
+    while (this.pasted.length) {
+      if (this.busy) return this.deps.host().stdin(this.pasted.splice(0).join(""));
+      const next = this.pasted.shift() ?? "";
+      const text = next.replace(/\r$/, "");
+      if (text) this.editor.input(text);
+      if (next.endsWith("\r")) this.editor.input("\r");
+    }
   }
 
   prompt() {
@@ -65,6 +81,7 @@ export class Shell {
       else this.builtin(cmd, args);
     } finally {
       this.editor.showPrompt();
+      if (!this.busy) this.drain();
     }
   }
 
