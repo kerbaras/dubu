@@ -23,4 +23,3 @@ writeFileSync(
   }),
 );
 console.log(readFileSync(`${out}manifest.json`, "utf8"));
-copyFileSync(`${src}wasm_exec.js`, fileURLToPath(new URL("../../../packages/runtime/src/wasm_exec.js", import.meta.url)));

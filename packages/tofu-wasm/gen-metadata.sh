@@ -18,5 +18,7 @@ tofu metadata functions -json > dist/functions.json
   echo '}'
 } > "$work/main.tf"
 (cd "$work" && tofu providers schema -json) > dist/schemas.json
-cp "$(go env GOROOT)/lib/wasm/wasm_exec.js" dist/wasm_exec.js
+# Keep the instance after exit so late JS callbacks hit the "already exited"
+# guard instead of crashing the worker on a missing _inst.
+sed "s/delete this._inst;//" "$(go env GOROOT)/lib/wasm/wasm_exec.js" > ../runtime/src/wasm_exec.js
 ls -l dist

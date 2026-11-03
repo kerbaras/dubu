@@ -1,7 +1,7 @@
 import "./styles.css";
 import * as monaco from "monaco-editor";
-import { TofuHost, loadModule } from "@tofu-playground/runtime";
-import TofuWorker from "@tofu-playground/runtime/worker?worker";
+import { TofuHost, loadModule } from "@dubu/runtime";
+import TofuWorker from "@dubu/runtime/worker?worker";
 import { mountLayout, wireSplitter } from "./ui/layout";
 import { renderFiles, renderOutline } from "./ui/sidebar";
 import { registerHcl } from "./editor/hcl-language";
@@ -144,7 +144,7 @@ const fmtMb = (n: number) => (n / 1048576).toFixed(1);
 async function boot() {
   const manifest = await fetch(`${BASE}manifest.json`).then((r) => r.json());
   ui.version.textContent = `OpenTofu v${manifest.version}`;
-  term.write(`\x1b[1mtofu playground\x1b[0m \x1b[2m· OpenTofu v${manifest.version} compiled to WebAssembly, running in your browser\x1b[0m\r\n`);
+  term.write(`\x1b[1mdubu\x1b[0m \x1b[2m· OpenTofu v${manifest.version} compiled to WebAssembly, running in your browser\x1b[0m\r\n`);
   const [module, meta] = await Promise.all([
     loadModule(`${BASE}tofu.wasm.gz`, manifest.gzipSize, (n, t) => {
       term.write(`\r\x1b[2K\x1b[2mdownloading tofu.wasm ${fmtMb(n)} / ${fmtMb(t)} MB\x1b[0m`);

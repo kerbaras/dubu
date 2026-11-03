@@ -1,5 +1,5 @@
 {
-  "name": "@tofu-playground/runtime",
+  "name": "@dubu/runtime",
   "private": true,
   "type": "module",
   "exports": {

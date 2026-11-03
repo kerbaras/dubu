@@ -1,5 +1,5 @@
 // UI-side mirror of /workspace: the editor's view of every file.
-import type { Entry } from "@tofu-playground/runtime";
+import type { Entry } from "@dubu/runtime";
 
 const dec = new TextDecoder("utf-8", { fatal: false });
 const ROOT = "/workspace/";

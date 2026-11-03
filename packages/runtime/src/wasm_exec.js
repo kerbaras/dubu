@@ -238,7 +238,7 @@
 						sp >>>= 0;
 						const code = this.mem.getInt32(sp + 8, true);
 						this.exited = true;
-						delete this._inst;
+						
 						delete this._values;
 						delete this._goRefCounts;
 						delete this._ids;

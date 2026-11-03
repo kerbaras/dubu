@@ -1,7 +1,7 @@
 // Runs the real `tofu validate -json` and `tofu fmt -` in a separate,
 // non-persistent worker so diagnostics never block the terminal.
 import * as monaco from "monaco-editor";
-import type { TofuHost } from "@tofu-playground/runtime";
+import type { TofuHost } from "@dubu/runtime";
 
 interface Diag {
   severity: "error" | "warning";

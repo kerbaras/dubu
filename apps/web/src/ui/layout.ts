@@ -8,8 +8,8 @@ export function mountLayout(root: HTMLElement) {
     <div class="flex h-full flex-col">
       <header class="flex h-12 shrink-0 items-center gap-3 border-b border-line bg-panel px-3">
         <div class="flex items-center gap-2">
-          <span class="grid size-7 place-items-center rounded-md bg-tofu font-mono text-[13px] font-bold text-tofu-ink" aria-hidden="true">tf</span>
-          <span class="text-[15px] font-semibold tracking-tight">tofu playground</span>
+          <span class="grid size-7 place-items-center rounded-md bg-tofu font-mono text-[13px] font-bold text-tofu-ink" aria-hidden="true">豆</span>
+          <span class="text-[15px] font-semibold tracking-tight">dubu</span>
         </div>
         <span class="rounded-full border border-line px-2 py-0.5 font-mono text-[11px] text-muted" id="version">loading…</span>
         <label class="ml-2 flex items-center gap-2 text-[12px] text-muted">
@@ -36,7 +36,7 @@ export function mountLayout(root: HTMLElement) {
             <div class="flex h-9 shrink-0 items-center gap-3 border-b border-line px-3 text-[12px]">
               <span class="font-medium text-ink">Terminal</span>
               <span id="term-status" class="font-mono text-faint">sandbox</span>
-              <button id="term-clear" class="icon-btn ml-auto" aria-label="Clear terminal" title="Clear">⌫</button>
+              <button id="term-clear" class="icon-btn ml-auto" aria-label="Clear terminal" title="Clear"><svg viewBox="0 0 16 16" class="size-3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 4h10M6 4V2.5h4V4M4.5 4l.7 9.5h5.6l.7-9.5"/></svg></button>
             </div>
             <div id="terminal" class="min-h-0 flex-1 pl-3 pt-2"></div>
           </section>
@@ -44,7 +44,7 @@ export function mountLayout(root: HTMLElement) {
         <aside class="hidden w-60 shrink-0 flex-col border-l border-line bg-panel md:flex" aria-label="Files">
           <div class="flex h-9 items-center justify-between border-b border-line px-3 text-[11px] font-semibold uppercase tracking-wider text-muted">
             <span>Workspace</span>
-            <button id="new-file" class="icon-btn" aria-label="New file" title="New file">＋</button>
+            <button id="new-file" class="icon-btn" aria-label="New file" title="New file"><svg viewBox="0 0 16 16" class="size-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg></button>
           </div>
           <ul id="files" class="flex-1 overflow-y-auto py-1 text-[13px]"></ul>
           <div id="outline-head" class="border-t border-line px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-muted">Outline</div>

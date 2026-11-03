@@ -1,19 +1,13 @@
 // A tiny sandbox shell: runs tofu (the real binary) plus a few file helpers.
 import type { Terminal } from "@xterm/xterm";
-import type { TofuHost } from "@tofu-playground/runtime";
+import type { TofuHost } from "@dubu/runtime";
 import { LineEditor } from "./line-editor";
+import { splitArgs } from "./split-args";
 import type { Workspace } from "../workspace/store";
 
 const c = (code: string, s: string) => `\x1b[${code}m${s}\x1b[0m`;
 const subcommands = ["console", "init", "plan", "apply", "destroy", "validate", "fmt", "output", "show", "state", "graph", "providers", "version", "test", "workspace", "import", "refresh", "taint", "untaint", "metadata"];
 const builtins = ["tofu", "terraform", "help", "clear", "ls", "cat", "rm", "history", "reset"];
-
-export function splitArgs(line: string): string[] {
-  const out: string[] = [];
-  const re = /"((?:[^"\\]|\\.)*)"|'([^']*)'|(\S+)/g;
-  for (let m; (m = re.exec(line)); ) out.push(m[1]?.replace(/\\(.)/g, "$1") ?? m[2] ?? m[3]);
-  return out;
-}
 
 export interface ShellDeps {
   host: () => TofuHost;
@@ -94,7 +88,7 @@ export class Shell {
       case "help":
         return w(
           [
-            c("1", "tofu playground") + " — the real OpenTofu CLI, compiled to WebAssembly.",
+            c("1", "dubu") + " — the real OpenTofu CLI, compiled to WebAssembly.",
             "",
             `  ${c("33", "tofu console")}        evaluate expressions against your config (Ctrl-D exits)`,
             `  ${c("33", "tofu init | plan | apply | destroy | validate | fmt | output | state ...")}`,

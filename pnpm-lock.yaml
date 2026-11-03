@@ -168,7 +168,7 @@ importers:
 
   apps/web:
     dependencies:
-      '@tofu-playground/runtime':
+      '@dubu/runtime':
         specifier: workspace:*
         version: link:../../packages/runtime
       '@xterm/addon-fit':
