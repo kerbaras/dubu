@@ -6,6 +6,10 @@ describe("splitArgs", () => {
   it("splits on whitespace and honours quotes", () => {
     expect(splitArgs(`tofu plan -var 'name=a b' -var "x=\\"y\\""`)).toEqual(["tofu", "plan", "-var", "name=a b", "-var", 'x="y"']);
   });
+
+  it("joins quotes inside a word", () => {
+    expect(splitArgs(`tofu plan -var="name=a b" '' x\\ y`)).toEqual(["tofu", "plan", "-var=name=a b", "", "x y"]);
+  });
 });
 
 describe("scanSymbols", () => {
