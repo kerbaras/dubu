@@ -8,6 +8,7 @@ SELF=github.com/opentofu/opentofu/playground/build/providers
 rm -rf build/providers
 for mod in $(go list -m -f '{{.Path}}' all | grep '/terraform-provider-'); do
   name=${mod##*-}
+  go mod download "$mod"
   src=$(go list -m -f '{{.Dir}}' "$mod")/internal
   dst=build/providers/$name
   mkdir -p "$dst"
