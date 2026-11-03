@@ -8,7 +8,7 @@ export function mountLayout(root: HTMLElement) {
     <div class="flex h-full flex-col">
       <header class="flex h-12 shrink-0 items-center gap-3 border-b border-line bg-panel px-3">
         <div class="flex items-center gap-2">
-          <span class="grid size-7 place-items-center rounded-md bg-tofu font-mono text-[13px] font-bold text-tofu-ink" aria-hidden="true">豆</span>
+          <svg viewBox="0 0 28 28" class="size-7" aria-hidden="true"><rect width="28" height="28" rx="7" fill="#ffda18"/><path d="M8 11.5 14 8l6 3.5v6L14 21l-6-3.5z" fill="#fff6c2" stroke="#1a1700" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 11.5 14 15l6-3.5M14 15v6" fill="none" stroke="#1a1700" stroke-width="1.6" stroke-linejoin="round"/></svg>
           <span class="text-[15px] font-semibold tracking-tight">dubu</span>
         </div>
         <span class="rounded-full border border-line px-2 py-0.5 font-mono text-[11px] text-muted" id="version">loading…</span>
