@@ -96,6 +96,12 @@ export class Tty implements Stdio {
     }
   }
 
+  /** Queues non-interactive input followed by EOF (e.g. for `tofu fmt -`). */
+  preload(text: string) {
+    this.ready.push(enc.encode(text));
+    this.eof = true;
+  }
+
   /** Drops pending input; used when a process exits. */
   reset() {
     this.line = [];

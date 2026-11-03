@@ -2,8 +2,8 @@
 import type { Entry } from "./vfs/snapshot";
 
 export type ToWorker =
-  | { t: "init"; module: WebAssembly.Module; seed: Entry[] }
-  | { t: "run"; argv: string[]; cols: number; rows: number }
+  | { t: "init"; module: WebAssembly.Module; seed: Entry[]; persist: boolean }
+  | { t: "run"; argv: string[]; cols: number; rows: number; stdin?: string }
   | { t: "stdin"; data: string }
   | { t: "resize"; cols: number; rows: number }
   | { t: "write"; path: string; data: Uint8Array }

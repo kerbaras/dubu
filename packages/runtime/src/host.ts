@@ -20,6 +20,7 @@ export class TofuHost {
     private makeWorker: () => Worker,
     private seed: () => Entry[],
     private events: HostEvents,
+    private persist = true,
   ) {
     this.spawn();
   }
@@ -27,7 +28,7 @@ export class TofuHost {
   private spawn() {
     this.worker = this.makeWorker();
     this.worker.onmessage = (e: MessageEvent<FromWorker>) => this.handle(e.data);
-    this.send({ t: "init", module: this.module, seed: this.seed() });
+    this.send({ t: "init", module: this.module, seed: this.seed(), persist: this.persist });
   }
 
   private send(m: ToWorker, transfer: Transferable[] = []) {
@@ -60,12 +61,12 @@ export class TofuHost {
     w?.(code);
   }
 
-  run(argv: string[], cols: number, rows: number): Promise<number> {
+  run(argv: string[], cols: number, rows: number, stdin?: string): Promise<number> {
     if (this.running) return Promise.reject(new Error("a process is already running"));
     this.running = true;
     return new Promise((resolve) => {
       this.exitWaiter = resolve;
-      this.send({ t: "run", argv, cols, rows });
+      this.send({ t: "run", argv, cols, rows, stdin });
     });
   }
 
