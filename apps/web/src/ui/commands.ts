@@ -30,13 +30,13 @@ export interface CommandDeps {
   reset(): void;
 }
 
-function toggler(key: string, apply: (on: boolean) => void) {
+function toggler(key: string, apply: (on: boolean, initial: boolean) => void, visible?: () => boolean) {
   let on = localStorage.getItem(key) !== "0";
-  apply(on);
-  return (show = !on) => {
+  apply(on, true);
+  return (show = !(visible?.() ?? on)) => {
     on = show;
     localStorage.setItem(key, on ? "1" : "0");
-    apply(on);
+    apply(on, false);
   };
 }
 
@@ -48,7 +48,12 @@ export function wireCommands(d: CommandDeps) {
     ui.termSection.style.display = ui.split.style.display = on ? "" : "none";
     ui.editorPane.style.flex = on ? flex : "1 1 auto";
   });
-  const sidebar = toggler("view.sidebar", (on) => (ui.sidebar.style.display = on ? "" : "none"));
+  // The aside is CSS-hidden below md, so an explicit toggle forces it open there too.
+  const sidebar = toggler(
+    "view.sidebar",
+    (on, initial) => (ui.sidebar.style.display = on ? (initial ? "" : "flex") : "none"),
+    () => getComputedStyle(ui.sidebar).display !== "none",
+  );
   const tofu = (cmd: string) => () => (terminal(true), void shell.type(cmd).then(() => term.focus()));
 
   const sendToConsole = () => {
