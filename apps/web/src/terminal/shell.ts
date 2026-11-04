@@ -105,7 +105,7 @@ export class Shell {
       const code = await this.deps.host().run(["tofu", ...args], this.term.cols, this.term.rows);
       if (code === 130) this.term.write(c("2", "(interrupted)\r\n"));
       else if (code !== 0) this.term.write(c("38;2;255;138;122", `exit status ${code}\r\n`));
-      if (code !== 0 && /was not found in any of the search/.test(this.tail)) this.term.write(c("2", `${unbundled}\r\n`));
+      if (code !== 0 && this.tail.includes("/usr/share/tofu/providers")) this.term.write(c("2", `${unbundled}\r\n`));
     } finally {
       this.busy = false;
       this.deps.onBusy(undefined);

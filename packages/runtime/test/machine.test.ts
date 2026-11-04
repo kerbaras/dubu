@@ -76,7 +76,7 @@ describe.skipIf(!existsSync(wasmPath))("tofu.wasm on the virtual machine", () =>
     const aws = `terraform {\n  required_providers {\n    aws = {\n      source = "hashicorp/aws"\n    }\n  }\n}\n`;
     restore(m.tree, [{ path: "/workspace/aws.tf", kind: "file", mode: 0o644, mtimeMs: 0, data: enc.encode(aws) }]);
     expect(await tofu(m, out, "init", "-no-color")).toBe(1);
-    expect(out.join("")).toMatch(/hashicorp\/aws was not found in any of the search/);
+    expect(out.join("")).toContain("/usr/share/tofu/providers");
     expect(out.join("")).not.toContain("registry.opentofu.org/.well-known");
   }, 60_000);
 });
