@@ -91,7 +91,7 @@ export function wireCommands(d: CommandDeps) {
     { title: "Terminal: Clear", keys: [isMac ? "ctrl+l" : "mod+l", "mod+k"], run: () => term.clear() },
     { title: "Editor: Format Document", keys: ["mod+s"], run: () => void editor.editor.getAction("editor.action.formatDocument")?.run() },
     { title: "Editor: Evaluate Selection in tofu console", keys: ["mod+enter"], run: sendToConsole, when: (c) => !c.terminal },
-    { title: "Preferences: Color Theme", keys: ["mod+k mod+t"], run: themePick },
+    { title: "Preferences: Color Theme", keys: ["mod+k mod+t", "mod+k t"], run: themePick },
     { title: "Preferences: Import VS Code Theme…", run: d.themes.importFile },
     { title: "Preferences: Follow System Light/Dark", run: () => d.themes.setMode("system") },
     { title: "Preferences: Use Light Theme", run: () => d.themes.setMode("light") },

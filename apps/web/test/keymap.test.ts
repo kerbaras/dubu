@@ -63,3 +63,13 @@ describe("fuzzy", () => {
     expect(fuzzy("plan", "Tofu: plan")!).toBeGreaterThan(fuzzy("plan", "Preferences: Use Light Theme") ?? -Infinity);
   });
 });
+
+describe("chord fallbacks", () => {
+  it("accepts a plain second key when the browser keeps Ctrl+T", () => {
+    const theme = vi.fn();
+    const map = new Keymap<object>([{ keys: ["mod+k"], run: () => {} }, { keys: ["mod+k mod+t", "mod+k t"], run: theme }]);
+    map.feed("mod+k", {});
+    map.feed("t", {}).run.forEach((b) => b.run());
+    expect(theme).toHaveBeenCalledOnce();
+  });
+});

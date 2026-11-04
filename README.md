@@ -22,13 +22,13 @@ there is no backend.
   | Cmd+L, Cmd+B | show/hide the sidebar (Ctrl+B on Windows/Linux) |
   | Cmd+J | show/hide the terminal |
   | Ctrl+L, Cmd+K | clear the terminal |
-  | Cmd+K Cmd+T | color theme (arrow keys preview) |
+  | Cmd+K Cmd+T, Cmd+K T | color theme (arrow keys preview) |
   | Cmd+N, Alt+N | new file |
   | Alt+W | close tab |
   | Cmd+S | format |
   | Cmd+Enter | evaluate the selection or current line in `tofu console` |
 
-  Chrome keeps Ctrl+N/W/T for itself, so the Alt variants are there for Windows and Linux.
+  Chrome keeps Ctrl+N/W/T for itself, so the Alt variants (and Ctrl+K T for themes) are there for Windows and Linux.
 
 ## How it works
 
