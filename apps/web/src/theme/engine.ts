@@ -27,6 +27,7 @@ export async function initHighlighter() {
     themes: [dubuTheme],
     engine: createJavaScriptRegexEngine({ forgiving: true }),
   });
+  bind();
 }
 
 /** shikiToMonaco only knows the themes loaded when it runs, so rebind from Monaco's originals each time. */
