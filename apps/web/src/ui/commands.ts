@@ -84,14 +84,14 @@ export function wireCommands(d: CommandDeps) {
   const commands: Command[] = [
     { title: "Show All Commands", keys: ["mod+shift+p", "f1"], run: () => palette() },
     { title: "Go to File…", keys: ["mod+p"], run: goToFile },
-    { title: "File: New File", keys: ["mod+n", "alt+n"], run: d.newFile },
+    { title: "File: New File", keys: isMac ? ["mod+n", "alt+n"] : ["alt+n", "mod+n"], run: d.newFile },
     { title: "File: Close Tab", keys: ["alt+w", "mod+w"], run: () => editor.active && editor.close(editor.active, d.open) },
     { title: "View: Toggle Sidebar", keys: isMac ? ["mod+l", "mod+b"] : ["mod+b"], run: () => sidebar() },
     { title: "View: Toggle Terminal", keys: ["mod+j", isMac ? "ctrl+`" : "mod+`"], run: () => (terminal(), ui.termSection.style.display === "none" ? editor.editor.focus() : term.focus()) },
     { title: "Terminal: Clear", keys: [isMac ? "ctrl+l" : "mod+l", "mod+k"], run: () => term.clear() },
     { title: "Editor: Format Document", keys: ["mod+s"], run: () => void editor.editor.getAction("editor.action.formatDocument")?.run() },
     { title: "Editor: Evaluate Selection in tofu console", keys: ["mod+enter"], run: sendToConsole, when: (c) => !c.terminal },
-    { title: "Preferences: Color Theme", keys: ["mod+k mod+t", "mod+k t"], run: themePick },
+    { title: "Preferences: Color Theme", keys: isMac ? ["mod+k mod+t", "mod+k t"] : ["mod+k t", "mod+k mod+t"], run: themePick },
     { title: "Preferences: Import VS Code Theme…", run: d.themes.importFile },
     { title: "Preferences: Follow System Light/Dark", run: () => d.themes.setMode("system") },
     { title: "Preferences: Use Light Theme", run: () => d.themes.setMode("light") },
@@ -110,6 +110,7 @@ export function wireCommands(d: CommandDeps) {
   const bindings: Binding<Ctx>[] = commands.flatMap((c) => (c.keys ?? []).map((k) => ({ keys: [k], run: c.run, when: c.when && ((ctx: Ctx) => c.when!(ctx, k)) })));
   listen(new Keymap(bindings), () => ({ terminal: ui.terminal.contains(document.activeElement) }));
   ui.paletteKeys.textContent = label("mod+shift+p");
+  ui.themeBtn.title = `Theme (${label(isMac ? "mod+k mod+t" : "mod+k t")})`;
   ui.paletteBtn.addEventListener("click", palette);
   return { palette, themePick };
 }

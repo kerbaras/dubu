@@ -19,7 +19,7 @@ export function mountLayout(root: HTMLElement) {
           </select>
         </label>
         <div class="ml-auto flex items-center gap-2">
-          <button id="theme-btn" class="icon-btn size-8" aria-label="Theme" title="Theme (Ctrl+K Ctrl+T)"><svg viewBox="0 0 16 16" class="size-4" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="5.5"/><path d="M8 2.5v11a5.5 5.5 0 0 0 0-11z" fill="currentColor"/></svg></button>
+          <button id="theme-btn" class="icon-btn size-8" aria-label="Theme" title="Theme"><svg viewBox="0 0 16 16" class="size-4" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="5.5"/><path d="M8 2.5v11a5.5 5.5 0 0 0 0-11z" fill="currentColor"/></svg></button>
           <button class="btn" data-cmd="tofu console" title="Restart the console with the current files">Console</button>
           <button class="btn" data-cmd="tofu init">Init</button>
           <button class="btn" data-cmd="tofu plan">Plan</button>
