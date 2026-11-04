@@ -34,7 +34,7 @@ let analyzer: Analyzer;
 const shell = new Shell(term, {
   host: () => host,
   ws,
-  removeFile: (p) => (host.removeFile(`/workspace/${p}`), ws.delete(p), editor.drop(p, open)),
+  removeFile: (p) => removeFile(p),
   reset: () => void resetWorkspace(),
   onBusy: (cmd) => {
     ui.termStatus.textContent = cmd ? `running · ${cmd}` : "sandbox";
@@ -58,6 +58,15 @@ const editor = new EditorPane(
   () => renderFiles(ui.files, ws.visible(), editor.active),
 );
 editor.editor.onDidChangeCursorPosition((e) => (ui.cursor.textContent = `Ln ${e.position.lineNumber}, Col ${e.position.column}`));
+
+function removeFile(path: string) {
+  host.removeFile(`/workspace/${path}`);
+  ws.delete(path);
+  editor.drop(path, open);
+  renderFiles(ui.files, ws.visible(), editor.active);
+  refreshSymbols();
+  analyze();
+}
 
 function open(path: string) {
   const f = ws.files.get(path);
@@ -90,12 +99,13 @@ ws.onChange(() => {
   }
   renderFiles(ui.files, ws.visible(), editor.active);
   refreshSymbols();
+  analyze();
 });
 
 ui.files.addEventListener("click", (e) => {
   const btn = (e.target as HTMLElement).closest<HTMLButtonElement>("button[data-path]");
   if (!btn) return;
-  if ((e.target as HTMLElement).hasAttribute("data-del")) return void (confirm(`Delete ${btn.dataset.path}?`) && shell.type(`rm ${btn.dataset.path}`));
+  if (btn.hasAttribute("data-del")) return void (confirm(`Delete ${btn.dataset.path}?`) && removeFile(btn.dataset.path!));
   open(btn.dataset.path!);
 });
 ui.outline.addEventListener("click", (e) => {

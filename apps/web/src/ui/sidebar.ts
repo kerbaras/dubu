@@ -8,10 +8,12 @@ export function renderFiles(list: HTMLElement, files: WsFile[], active: string |
   list.replaceChildren(
     ...files.map((f) => {
       const li = document.createElement("li");
-      li.innerHTML = `<button class="group flex w-full items-center gap-2 px-3 py-1 text-left hover:bg-raised"><span class="w-3 text-center text-[10px] text-tofu"></span><span class="truncate font-mono text-[12.5px]"></span><span class="ml-auto hidden text-faint group-hover:inline" data-del title="Delete">✕</span></button>`;
-      const btn = li.firstElementChild as HTMLButtonElement;
-      btn.dataset.path = f.path;
-      if (f.path === active) btn.classList.add("bg-raised", "text-ink");
+      li.className = "group flex items-center hover:bg-raised";
+      li.innerHTML = `<button class="flex min-w-0 flex-1 items-center gap-2 px-3 py-1 text-left"><span class="w-3 text-center text-[10px] text-tofu"></span><span class="truncate font-mono text-[12.5px]"></span></button><button class="px-2 py-1 text-faint opacity-0 group-hover:opacity-100 hover:text-bad focus-visible:opacity-100" data-del>✕</button>`;
+      const [btn, del] = li.children as unknown as [HTMLButtonElement, HTMLButtonElement];
+      btn.dataset.path = del.dataset.path = f.path;
+      del.title = del.ariaLabel = `Delete ${f.path}`;
+      if (f.path === active) li.classList.add("bg-raised"), btn.classList.add("text-ink");
       else btn.classList.add("text-muted");
       btn.children[0].textContent = icon(f.path);
       btn.children[1].textContent = f.path;
