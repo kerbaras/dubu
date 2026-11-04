@@ -19,6 +19,7 @@ export function mountLayout(root: HTMLElement) {
           </select>
         </label>
         <div class="ml-auto flex items-center gap-2">
+          <button id="theme-btn" class="icon-btn size-8" aria-label="Theme" title="Theme (Ctrl+K Ctrl+T)"><svg viewBox="0 0 16 16" class="size-4" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="5.5"/><path d="M8 2.5v11a5.5 5.5 0 0 0 0-11z" fill="currentColor"/></svg></button>
           <button class="btn" data-cmd="tofu console" title="Restart the console with the current files">Console</button>
           <button class="btn" data-cmd="tofu init">Init</button>
           <button class="btn" data-cmd="tofu plan">Plan</button>
@@ -32,7 +33,7 @@ export function mountLayout(root: HTMLElement) {
             <div id="editor" class="min-h-0 flex-1"></div>
           </div>
           <div id="split" class="splitter h-px cursor-row-resize" role="separator" aria-orientation="horizontal" tabindex="0" aria-label="Resize terminal"></div>
-          <section class="flex min-h-0 flex-1 flex-col bg-bg" aria-label="Terminal">
+          <section id="term-section" class="flex min-h-0 flex-1 flex-col bg-bg" aria-label="Terminal">
             <div class="flex h-9 shrink-0 items-center gap-3 border-b border-line px-3 text-[12px]">
               <span class="font-medium text-ink">Terminal</span>
               <span id="term-status" class="font-mono text-faint">sandbox</span>
@@ -41,7 +42,7 @@ export function mountLayout(root: HTMLElement) {
             <div id="terminal" class="min-h-0 flex-1 pl-3 pt-2"></div>
           </section>
         </main>
-        <aside class="hidden w-60 shrink-0 flex-col border-l border-line bg-panel md:flex" aria-label="Files">
+        <aside id="sidebar" class="hidden w-60 shrink-0 flex-col border-l border-line bg-panel md:flex" aria-label="Files">
           <div class="flex h-9 items-center justify-between border-b border-line px-3 text-[11px] font-semibold uppercase tracking-wider text-muted">
             <span>Workspace</span>
             <button id="new-file" class="icon-btn" aria-label="New file" title="New file"><svg viewBox="0 0 16 16" class="size-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg></button>
@@ -55,6 +56,7 @@ export function mountLayout(root: HTMLElement) {
         <span id="status-runtime" class="flex items-center gap-1.5"><span id="dot" class="size-2 rounded-full bg-faint"></span><span id="runtime-text">loading</span></span>
         <span id="status-diags"></span>
         <span class="ml-auto" id="status-cursor"></span>
+        <button id="palette-btn" class="hover:text-ink" title="Command palette">Commands <kbd id="palette-keys" class="text-faint"></kbd></button>
         <span>HCL</span>
         <span title="Files and state are stored in this browser">● saved locally</span>
       </footer>
@@ -62,6 +64,7 @@ export function mountLayout(root: HTMLElement) {
   const $ = <T extends HTMLElement>(id: string) => root.querySelector<T>(`#${id}`)!;
   return {
     version: $("version"),
+    themeBtn: $<HTMLButtonElement>("theme-btn"),
     example: $<HTMLSelectElement>("example"),
     commands: [...root.querySelectorAll<HTMLButtonElement>("[data-cmd]")],
     editorPane: $("editor-pane"),
@@ -71,6 +74,10 @@ export function mountLayout(root: HTMLElement) {
     terminal: $("terminal"),
     termStatus: $("term-status"),
     termClear: $("term-clear"),
+    termSection: $("term-section"),
+    sidebar: $("sidebar"),
+    paletteBtn: $<HTMLButtonElement>("palette-btn"),
+    paletteKeys: $("palette-keys"),
     files: $("files"),
     newFile: $("new-file"),
     outline: $("outline"),

@@ -24,6 +24,7 @@ export interface ShellDeps {
 export class Shell {
   private editor: LineEditor;
   private busy = false;
+  private current?: string;
   private pasted: string[] = [];
   private tail = "";
   private dec = new TextDecoder();
@@ -32,7 +33,7 @@ export class Shell {
     private term: Terminal,
     private deps: ShellDeps,
   ) {
-    this.editor = new LineEditor(() => `${c("38;2;255;218;24", "tofu")}${c("38;2;107;102;91", ":")}${c("38;2;143;182;255", "/workspace")}$ `, {
+    this.editor = new LineEditor(() => `${c("33", "tofu")}${c("90", ":")}${c("34", "/workspace")}$ `, {
       write: (s) => term.write(s),
       submit: (line) => void this.exec(line),
       complete: (left) => this.complete(left),
@@ -85,6 +86,14 @@ export class Shell {
     await this.exec(line);
   }
 
+  /** Sends text to the running `tofu console`, starting one if the shell is idle. */
+  evaluate(text: string) {
+    if (this.busy && !this.current?.startsWith("tofu console")) return false;
+    if (!this.busy) void this.type("tofu console");
+    this.deps.host().stdin(`${text.replace(/\r?\n/g, "\r")}\r`);
+    return true;
+  }
+
   private async exec(line: string) {
     const [cmd, ...args] = splitArgs(line);
     try {
@@ -99,15 +108,17 @@ export class Shell {
 
   private async tofu(args: string[]) {
     this.busy = true;
-    this.deps.onBusy(["tofu", ...args].join(" "));
+    this.current = ["tofu", ...args].join(" ");
+    this.deps.onBusy(this.current);
     this.tail = "";
     try {
       const code = await this.deps.host().run(["tofu", ...args], this.term.cols, this.term.rows);
       if (code === 130) this.term.write(c("2", "(interrupted)\r\n"));
-      else if (code !== 0) this.term.write(c("38;2;255;138;122", `exit status ${code}\r\n`));
+      else if (code !== 0) this.term.write(c("31", `exit status ${code}\r\n`));
       if (code !== 0 && this.tail.includes("/usr/share/tofu/providers")) this.term.write(c("2", `${unbundled}\r\n`));
     } finally {
       this.busy = false;
+      this.current = undefined;
       this.deps.onBusy(undefined);
     }
   }

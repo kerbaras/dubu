@@ -10,6 +10,26 @@ there is no backend.
 - Multiple files, with files and state kept in IndexedDB
 - Editor diagnostics from the real `tofu validate -json`, formatting via `tofu fmt`, completion
   and hover from the binary's own function signatures and provider schemas
+- VS Code themes (GitHub, Catppuccin, Gruvbox, One Dark, Dracula, Nord, Tokyo Night, ...) via
+  [Shiki](https://shiki.style) and HashiCorp's TextMate grammar. "System" follows your OS light/dark
+  setting. Drop any VS Code theme `.json` on the page to add it
+- VS Code shortcuts (Cmd on macOS, Ctrl elsewhere):
+
+  | Keys | Action |
+  | --- | --- |
+  | Cmd+Shift+P, F1 | command palette |
+  | Cmd+P | go to file |
+  | Cmd+L, Cmd+B | show/hide the sidebar |
+  | Cmd+J | show/hide the terminal |
+  | Cmd+K | clear the terminal |
+  | Cmd+K Cmd+T | color theme (arrow keys preview) |
+  | Cmd+N, Alt+N | new file |
+  | Alt+W | close tab |
+  | Cmd+S | format |
+  | Cmd+Enter | evaluate the selection or current line in `tofu console` |
+
+  Chrome keeps Ctrl+N/W/T for itself, so the Alt variants are there for Windows and Linux. On
+  Windows and Linux, Ctrl+L inside the terminal clears it, like a shell.
 
 ## How it works
 

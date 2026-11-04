@@ -46,7 +46,7 @@ body,
   @apply inline-flex h-8 items-center gap-1.5 rounded-md border border-line bg-panel px-3 text-[13px] font-medium text-ink transition-colors hover:border-faint hover:bg-raised disabled:cursor-not-allowed disabled:opacity-50;
 }
 .btn-primary {
-  @apply border-tofu bg-tofu text-tofu-ink hover:border-[#ffe55c] hover:bg-[#ffe55c];
+  @apply border-tofu bg-tofu text-tofu-ink hover:brightness-110;
 }
 .icon-btn {
   @apply inline-flex size-7 items-center justify-center rounded-md text-muted transition-colors hover:bg-raised hover:text-ink;

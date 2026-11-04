@@ -12,10 +12,12 @@
   },
   "dependencies": {
     "@dubu/runtime": "workspace:*",
+    "@shikijs/monaco": "^4.6.0",
     "@xterm/addon-fit": "^0.10.0",
     "@xterm/addon-web-links": "^0.11.0",
     "@xterm/xterm": "^5.5.0",
-    "monaco-editor": "^0.52.2"
+    "monaco-editor": "^0.52.2",
+    "shiki": "^4.6.0"
   },
   "devDependencies": {
     "@fontsource-variable/inter-tight": "^5.3.0",

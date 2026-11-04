@@ -2,7 +2,6 @@
 import * as monaco from "monaco-editor";
 import EditorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
 import { HCL } from "./hcl-language";
-import { THEME } from "./theme";
 
 self.MonacoEnvironment = { getWorker: () => new EditorWorker() };
 
@@ -23,7 +22,6 @@ export class EditorPane {
     private onActive: (path: string | undefined) => void,
   ) {
     this.editor = monaco.editor.create(host, {
-      theme: THEME,
       fontFamily: '"JetBrains Mono Variable", ui-monospace, monospace',
       fontSize: 13.5,
       lineHeight: 22,

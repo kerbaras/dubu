@@ -5,7 +5,10 @@ import TofuWorker from "@dubu/runtime/worker?worker";
 import { mountLayout, wireSplitter } from "./ui/layout";
 import { renderFiles, renderOutline } from "./ui/sidebar";
 import { registerHcl } from "./editor/hcl-language";
-import { registerTheme } from "./editor/theme";
+import { initHighlighter } from "./theme/engine";
+import { loadCustom } from "./theme/catalog";
+import { wireThemes } from "./ui/theme-picker";
+import { wireCommands } from "./ui/commands";
 import { EditorPane } from "./editor/editor";
 import { loadMetadata } from "./editor/metadata";
 import { registerCompletion } from "./editor/completion";
@@ -20,7 +23,6 @@ const BASE = `${import.meta.env.BASE_URL}tofu/`;
 const ui = mountLayout(document.querySelector("#app")!);
 wireSplitter(ui.split, ui.editorPane);
 registerHcl();
-registerTheme();
 
 const ws = new Workspace();
 let symbols: Sym[] = [];
@@ -29,6 +31,9 @@ const seed = () => toEntries((examples.find((e) => e.id === exampleId()) ?? exam
 const configFiles = () => new Map([...ws.files.values()].filter((f) => isConfig(f.path)).map((f) => [f.path, f.text]));
 
 const term = createTerminal(ui.terminal);
+await Promise.all([initHighlighter(), loadCustom()]);
+const themes = wireThemes(ui.themeBtn, term);
+await themes.refresh();
 let host: TofuHost;
 let analyzer: Analyzer;
 const shell = new Shell(term, {
@@ -123,14 +128,16 @@ ui.tabs.addEventListener("click", (e) => {
   if ((e.target as HTMLElement).closest("button")) editor.close(tab.dataset.path!, open);
   else open(tab.dataset.path!);
 });
-ui.newFile.addEventListener("click", () => {
+function newFile() {
   const name = prompt("New file name", "outputs.tf")?.trim();
   if (!name || !/^[\w.-]+$/.test(name)) return;
   ws.set(name, "");
   host.writeFile(`/workspace/${name}`, "");
   renderFiles(ui.files, ws.visible(), editor.active);
   open(name);
-});
+}
+ui.newFile.addEventListener("click", newFile);
+wireCommands({ ui, term, shell, editor, ws, themes, open, newFile, reset: () => void resetWorkspace() });
 ui.commands.forEach((b) => b.addEventListener("click", () => void shell.type(b.dataset.cmd!).then(() => term.focus())));
 ui.example.value = exampleId();
 ui.example.addEventListener("change", () => {
