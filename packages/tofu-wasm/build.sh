@@ -61,3 +61,4 @@ entries=(
 
 go build -trimpath -ldflags="-s -w -X github.com/opentofu/opentofu/version.dev=no -X google.golang.org/protobuf/reflect/protoregistry.conflictPolicy=ignore" -overlay build/overlay.json -o "$OUT" github.com/opentofu/opentofu/cmd/tofu
 ls -lh "$OUT"
+./gen-metadata.sh

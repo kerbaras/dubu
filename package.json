@@ -1,0 +1,14 @@
+{
+  "name": "dubu",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.4.2",
+  "scripts": {
+    "build:wasm": "packages/tofu-wasm/build.sh",
+    "dev": "pnpm --filter @dubu/web dev",
+    "build": "pnpm --filter @dubu/web build",
+    "test": "pnpm -r test",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "pnpm -r lint"
+  }
+}

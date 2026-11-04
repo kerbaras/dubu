@@ -1,5 +1,5 @@
 // Minimal IndexedDB key/value store for workspace snapshots.
-const DB = "tofu-playground";
+const DB = "dubu";
 const STORE = "kv";
 
 function open(): Promise<IDBDatabase> {

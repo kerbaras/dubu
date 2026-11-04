@@ -1,9 +1,12 @@
 // Messages exchanged between the UI thread and the tofu worker.
 import type { Entry } from "./vfs/snapshot";
 
+/** A file write (or removal when `data` is null) not yet known to be persisted. */
+export type Edit = { path: string; data: Uint8Array | null };
+
 export type ToWorker =
-  | { t: "init"; wasmUrl: string; seed: Entry[] }
-  | { t: "run"; argv: string[]; cols: number; rows: number }
+  | { t: "init"; module: WebAssembly.Module; seed: Entry[]; persist: boolean; edits: Edit[] }
+  | { t: "run"; argv: string[]; cols: number; rows: number; stdin?: string }
   | { t: "stdin"; data: string }
   | { t: "resize"; cols: number; rows: number }
   | { t: "write"; path: string; data: Uint8Array }
@@ -11,7 +14,6 @@ export type ToWorker =
   | { t: "reset"; seed: Entry[] };
 
 export type FromWorker =
-  | { t: "progress"; loaded: number; total: number }
   | { t: "ready"; files: Entry[]; restored: boolean }
   | { t: "out"; data: Uint8Array }
   | { t: "interrupt" }

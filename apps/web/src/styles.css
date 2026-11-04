@@ -1,0 +1,85 @@
+@import "tailwindcss";
+@import "@fontsource-variable/inter-tight";
+@import "@fontsource-variable/jetbrains-mono";
+@import "@xterm/xterm/css/xterm.css";
+
+/* Warm "tofu block" palette: near-black soy, off-white tofu, OpenTofu yellow. */
+@theme {
+  --font-sans: "Inter Tight Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "SFMono-Regular", monospace;
+  --color-bg: #131210;
+  --color-panel: #191815;
+  --color-raised: #22201c;
+  --color-line: #2c2a25;
+  --color-ink: #ece7dc;
+  --color-muted: #959083;
+  --color-faint: #6b665b;
+  --color-tofu: #ffda18;
+  --color-tofu-ink: #1a1700;
+  --color-ok: #7fd4a6;
+  --color-bad: #ff8a7a;
+  --color-info: #8fb6ff;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  overflow: hidden;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-tofu);
+  outline-offset: -2px;
+}
+
+* {
+  scrollbar-color: var(--color-line) transparent;
+  scrollbar-width: thin;
+}
+
+.btn {
+  @apply inline-flex h-8 items-center gap-1.5 rounded-md border border-line bg-panel px-3 text-[13px] font-medium text-ink transition-colors hover:border-faint hover:bg-raised disabled:cursor-not-allowed disabled:opacity-50;
+}
+.btn-primary {
+  @apply border-tofu bg-tofu text-tofu-ink hover:brightness-110;
+}
+.icon-btn {
+  @apply inline-flex size-7 items-center justify-center rounded-md text-muted transition-colors hover:bg-raised hover:text-ink;
+}
+.tab {
+  @apply relative flex h-full items-center gap-2 border-r border-line px-4 text-[13px] text-muted hover:text-ink;
+}
+.tab[aria-selected="true"] {
+  @apply bg-bg text-ink;
+}
+.tab[aria-selected="true"]::before {
+  content: "";
+  @apply absolute inset-x-0 top-0 h-0.5 bg-tofu;
+}
+.splitter {
+  @apply relative shrink-0 bg-line;
+}
+.splitter::after {
+  content: "";
+  @apply absolute -inset-1;
+}
+.splitter:hover,
+.splitter.dragging {
+  @apply bg-tofu;
+}
+
+.xterm .xterm-viewport {
+  background: transparent !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
