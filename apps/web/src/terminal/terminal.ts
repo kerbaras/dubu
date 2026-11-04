@@ -12,6 +12,7 @@ export function createTerminal(host: HTMLElement) {
     lineHeight: 1.25,
     scrollback: 5000,
     allowProposedApi: true,
+    minimumContrastRatio: 4.5,
   });
   const fit = new FitAddon();
   term.loadAddon(fit);
