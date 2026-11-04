@@ -173,7 +173,7 @@ async function boot() {
   });
   await new Promise<void>((resolve) => {
     host = new TofuHost(module, () => new TofuWorker(), seed, {
-      output: (d) => term.write(d),
+      output: (d) => shell.output(d),
       files: (f) => ws.sync(f),
       ready: () => resolve(),
       error: (m) => term.write(`\x1b[31m${m}\x1b[0m\r\n`),

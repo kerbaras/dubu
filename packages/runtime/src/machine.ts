@@ -5,11 +5,19 @@ import { Tty, type TtyHooks } from "./tty";
 import { WORKSPACE } from "./protocol";
 
 export const HOME = "/home/user";
+export const CLI_CONFIG = "/etc/tofurc";
+const MIRROR = "/usr/share/tofu/providers";
+
+// Only providers compiled into tofu.wasm can run, so init must never ask the registry
+// (it has no raw sockets here): an empty mirror makes unknown providers fail fast.
+const cliConfig = `provider_installation {\n  filesystem_mirror {\n    path = "${MIRROR}"\n  }\n}\n`;
 
 export function createMachine(hooks: TtyHooks, onChange: (path: string) => void) {
   const tree = new Tree();
-  for (const d of ["/dev", "/tmp", HOME, WORKSPACE]) tree.mkdirp(d);
+  for (const d of ["/dev", "/etc", "/tmp", MIRROR, HOME, WORKSPACE]) tree.mkdirp(d);
   for (const f of ["tty", "null"]) devFile(tree, f);
+  const etc = tree.lookup("/etc");
+  if (etc.kind === "dir") etc.children.set("tofurc", newFile(new TextEncoder().encode(cliConfig)));
   tree.cwd = WORKSPACE;
   const tty = new Tty(hooks);
   const fs = createFsApi(tree, tty, onChange);
@@ -48,5 +56,6 @@ export function tofuEnv(cols: number, rows: number): Record<string, string> {
     COLUMNS: String(cols),
     LINES: String(rows),
     CHECKPOINT_DISABLE: "1",
+    TF_CLI_CONFIG_FILE: CLI_CONFIG,
   };
 }

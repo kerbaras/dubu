@@ -9,6 +9,10 @@ const c = (code: string, s: string) => `\x1b[${code}m${s}\x1b[0m`;
 const subcommands = ["console", "init", "plan", "apply", "destroy", "validate", "fmt", "output", "show", "state", "graph", "providers", "version", "test", "workspace", "import", "refresh", "taint", "untaint", "metadata"];
 const builtins = ["tofu", "terraform", "help", "clear", "ls", "cat", "rm", "history", "reset"];
 
+const unbundled =
+  "dubu only runs providers compiled into tofu.wasm: hashicorp/random, null, local, time and http.\r\n" +
+  "Others (aws, google, azurerm, ...) are native plugin processes and can't run in a browser tab.";
+
 export interface ShellDeps {
   host: () => TofuHost;
   ws: Workspace;
@@ -21,6 +25,8 @@ export class Shell {
   private editor: LineEditor;
   private busy = false;
   private pasted: string[] = [];
+  private tail = "";
+  private dec = new TextDecoder();
 
   constructor(
     private term: Terminal,
@@ -58,6 +64,12 @@ export class Shell {
     }
   }
 
+  /** Process output: shown in the terminal and kept briefly to explain known failures. */
+  output(data: Uint8Array) {
+    this.term.write(data);
+    this.tail = (this.tail + this.dec.decode(data, { stream: true })).slice(-4096);
+  }
+
   prompt() {
     this.editor.showPrompt();
   }
@@ -88,10 +100,12 @@ export class Shell {
   private async tofu(args: string[]) {
     this.busy = true;
     this.deps.onBusy(["tofu", ...args].join(" "));
+    this.tail = "";
     try {
       const code = await this.deps.host().run(["tofu", ...args], this.term.cols, this.term.rows);
       if (code === 130) this.term.write(c("2", "(interrupted)\r\n"));
       else if (code !== 0) this.term.write(c("38;2;255;138;122", `exit status ${code}\r\n`));
+      if (code !== 0 && /was not found in any of the search/.test(this.tail)) this.term.write(c("2", `${unbundled}\r\n`));
     } finally {
       this.busy = false;
       this.deps.onBusy(undefined);
